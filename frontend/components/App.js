@@ -67,7 +67,13 @@ export default class App extends React.Component {
     this.setState({ ...this.state, todoNewText: "" });
   };
 
-  clearCompleted = () => {};
+  clearCompleted = () => {
+    this.setState({
+      ...this.state,
+      clearBtnPressed: !this.state.clearBtnPressed,
+    });
+  };
+
   render() {
     return (
       <div className="app">
@@ -78,6 +84,7 @@ export default class App extends React.Component {
           todos={this.state.todos}
           message={this.state.message}
           clickhandler={this.clickhandler}
+          clearBtnPressed={this.state.clearBtnPressed}
         />
         <Form
           changeHandler={this.changeHandler}
