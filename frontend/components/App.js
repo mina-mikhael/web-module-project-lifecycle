@@ -7,97 +7,82 @@ const URL = "http://localhost:9000/api/todos";
 export default class App extends React.Component {
   state = {
     todos: [],
-    filteredTodos: [],
-    message: "",
-    newToDoText: "",
+    todoNewText: "",
     clearBtnPressed: false,
-    newTodo: {},
+    error: "",
+  };
+  postNewTodo = () => {
+    axios
+      .post(URL, { name: this.state.todoNewText })
+      .then(() => this.addAllTodos())
+      .catch((err) =>
+        this.setState({ ...this.state, error: err.response.data.message })
+      );
   };
 
-  componentDidMount() {
+  addAllTodos = () => {
     axios
       .get(URL)
       .then((res) => {
-        console.log(res.data);
-        this.setState({
-          todos: res.data.data,
-          message: res.data.message,
-          filteredTodos: res.data.data,
-        });
+        this.setState({ ...this.state, todos: res.data.data });
+        this.setState({ ...this.state, error: "" });
       })
       .catch((err) => {
-        console.error(err);
+        this.setState({ ...this.state, error: err.response.data.message });
       });
+  };
+
+  componentDidMount() {
+    this.addAllTodos();
   }
 
   clickhandler = (itemID) => {
-    this.setState({
-      filteredTodos: this.state.filteredTodos.map((item) => {
-        if (itemID === item.id) {
-          return {
-            ...item,
-            completed: !item.completed,
-          };
-        } else {
-          return { ...item };
-        }
-      }),
-    });
+    axios
+      .patch(`${URL}/${itemID}`)
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          todos: this.state.todos.map((item) => {
+            if (item.id !== itemID) {
+              return item;
+            } else return res.data.data;
+          }),
+        });
+      })
+      .catch((err) => {
+        this.setState({ ...this.state, error: err.response.data.message });
+      });
   };
 
   changeHandler = (e) => {
     this.setState({
-      newToDoText: e.target.value,
+      ...this.state,
+      todoNewText: e.target.value,
     });
-  };
-  newToDo = () => {
-    const createdTodo = {
-      name: this.state.newToDoText,
-      id: Date.now(),
-      completed: false,
-    };
-    this.setState({ newTodo: createdTodo });
-    console.log("new ToDO: ", this.state.newTodo);
   };
 
   submitHandler = (e) => {
     e.preventDefault();
-    this.newToDo();
-    axios
-      .post(URL, this.state.newTodo)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    this.setState({ newToDoText: "" });
+    this.postNewTodo();
+    this.setState({ ...this.state, todoNewText: "" });
   };
 
-  clearCompleted = () => {
-    this.setState({
-      clearBtnPressed: !this.state.clearBtnPressed,
-    });
-    if (this.state.clearBtnPressed === false) {
-      this.setState({ filteredTodos: this.state.todos });
-    } else {
-      this.setState({
-        filteredTodos: this.state.todos.filter((element) => !element.completed),
-      });
-    }
-  };
+  clearCompleted = () => {};
   render() {
     return (
       <div className="app">
+        {this.state.error && (
+          <h2 className="error">ERROR: {this.state.error}</h2>
+        )}
         <TodoList
-          filteredTodos={this.state.filteredTodos}
+          todos={this.state.todos}
           message={this.state.message}
           clickhandler={this.clickhandler}
         />
         <Form
           changeHandler={this.changeHandler}
           submitHandler={this.submitHandler}
-          newToDoText={this.state.newToDoText}
+          todoNewText={this.state.todoNewText}
           clearCompleted={this.clearCompleted}
           clearBtnPressed={this.state.clearBtnPressed}
         />

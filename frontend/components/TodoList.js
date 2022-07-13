@@ -3,17 +3,12 @@ import Todo from "./Todo";
 
 export default class TodoList extends React.Component {
   render() {
-    const { filteredTodos, message } = this.props;
+    const { todos, message } = this.props;
 
     return (
       <div className="todoList">
-        <h2>
-          {" "}
-          {message === "Here are your Todos"
-            ? `${message} :`
-            : "there was an error"}
-        </h2>
-        {filteredTodos.map((todo) => {
+        <h2>Todos:</h2>
+        {todos.map((todo) => {
           return (
             <Todo
               key={todo.id}

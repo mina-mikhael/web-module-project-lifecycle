@@ -5,7 +5,7 @@ export default class Form extends React.Component {
     const {
       changeHandler,
       submitHandler,
-      newToDoText,
+      todoNewText,
       clearCompleted,
       clearBtnPressed,
     } = this.props;
@@ -15,7 +15,7 @@ export default class Form extends React.Component {
           <input
             type="text"
             placeholder="add new todo"
-            value={newToDoText}
+            value={todoNewText}
             onChange={changeHandler}
           />
           &nbsp;
