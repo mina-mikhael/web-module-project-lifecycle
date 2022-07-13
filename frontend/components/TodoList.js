@@ -3,8 +3,8 @@ import Todo from "./Todo";
 
 export default class TodoList extends React.Component {
   render() {
-    const { todos, message } = this.props;
-    console.log(this.props, "from todolist");
+    const { filteredTodos, message } = this.props;
+
     return (
       <div className="todoList">
         <h2>
@@ -13,8 +13,7 @@ export default class TodoList extends React.Component {
             ? `${message} :`
             : "there was an error"}
         </h2>
-        {todos.map((todo) => {
-          console.log(todo, "from todo");
+        {filteredTodos.map((todo) => {
           return (
             <Todo
               key={todo.id}
